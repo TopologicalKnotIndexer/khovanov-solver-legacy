@@ -1,28 +1,37 @@
-# 给定一个字符串
-# 判断它是否是一个合法的扭结 PD_CODE
-# 理论上需要进行平面图判断，但是考虑到节约时间，这里省略了这一步
-# 如果输入合法，则返回 pd_code
-# 如何输入不合法，则直接报错并退出
+"""Parse and structurally validate a planar diagram code."""
 
-def input_sanity(input_string: str) -> list:
-    pd_code = eval(input_string)
-    assert isinstance(pd_code, list) # PD_CODE 必须是一个 list
-    for item in pd_code:
-        assert isinstance(item, list) # PD_CODE 中的每个元素必须是一个 list
-    for item in pd_code:
-        assert len(item) == 4 # PD_CODE 中的每个 crossing 中必须有四个元素
-    for item in pd_code:
-        for x in item:
-            assert isinstance(x, int) # PD_CODE 的每个 crossing 中的四个元素必须都是整数
-    cnt = {}
-    for item in pd_code: # 统计每个弧编号出现的次数，存入 cnt 中
-        for x in item:
-            if cnt.get(x) is None:
-                cnt[x] = 0
-            cnt[x] += 1
-    for x in cnt:
-        assert cnt[x] == 2 # PD_CODE 中每条弧线，必须恰好出现两次
+from __future__ import annotations
+
+import ast
+from collections import Counter
+
+
+def input_sanity(input_string: str) -> list[list[int]]:
+    try:
+        value = ast.literal_eval(input_string)
+    except (SyntaxError, ValueError) as exc:
+        raise ValueError("PD code must be a Python/JSON-style nested list") from exc
+    if not isinstance(value, list):
+        raise ValueError("PD code must be a list")
+
+    pd_code: list[list[int]] = []
+    counts: Counter[int] = Counter()
+    for crossing in value:
+        if not isinstance(crossing, (list, tuple)) or len(crossing) != 4:
+            raise ValueError("every PD crossing must contain exactly four entries")
+        normalized: list[int] = []
+        for label in crossing:
+            if isinstance(label, bool) or not isinstance(label, int) or label <= 0:
+                raise ValueError("PD labels must be positive integers")
+            normalized.append(label)
+            counts[label] += 1
+        pd_code.append(normalized)
+
+    bad = {label: count for label, count in counts.items() if count != 2}
+    if bad:
+        raise ValueError(f"every PD label must occur exactly twice: {bad}")
     return pd_code
 
-if __name__ == "__main__": # 测试程序
+
+if __name__ == "__main__":
     print(input_sanity("[[1,2,2,1]]"))
