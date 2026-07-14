@@ -70,3 +70,16 @@ trefoil, Hopf link, R1 reduction, input rejection, and an explicit Java path.
 
 See [Third-party components](THIRD_PARTY.md) for the bundled JavaKh and JAR
 provenance. No package is published as part of repository maintenance.
+
+## Citation
+
+If you use this repository in academic work, please cite it as:
+
+```bibtex
+@software{topologicalknotindexer_khovanov_solver_legacy,
+  author = {{TopologicalKnotIndexer contributors}},
+  title = {{khovanov-solver-legacy}},
+  year = {2026},
+  url = {https://github.com/TopologicalKnotIndexer/khovanov-solver-legacy}
+}
+```
